@@ -1,0 +1,203 @@
+<aura:component controller="ContractCreatorFromOpportunityCtrl"
+    implements="force:hasRecordId,flexipage:availableForAllPageTypes"
+    description="creates Contract from Opportunity">
+
+    <aura:handler name="init" action="{!c.initCmp}" value="{!this}"/>
+
+    <aura:handler event="force:refreshView" action="{!c.refreshCmp}" />
+
+    <aura:attribute name="apexCtrl" type="ContractCreatorFromOpportunityCtrl"/>
+
+    <div class="slds-align--absolute-center slds-box slds-theme--shade slds-theme--alert-texture" style="position:relative">
+        <div class="wrapper slds-form--compound">
+
+            <div class="slds-text-heading_large slds-text-align_center">
+                {!$Label.c.ContractCreatorFromOpp_Title}
+            </div>
+
+            <div class="clear"></div>
+
+            <aura:if isTrue="{! v.apexCtrl.opp.IsClosed &amp;&amp; !v.apexCtrl.contractCreated}">
+                <div class="slds-text-heading_small ">
+                    {!$Label.c.ContractCreatorFromOpp_OppClosed}
+                </div>
+
+                <aura:set attribute="else">
+                    <div class="slds-text-heading_small slds-p-bottom_x-small">
+                        {!$Label.c.ContractCreatorFromOpp_OppFields}
+                    </div>
+
+                    <div class="clear"></div>
+
+                    <fieldset class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <span class="slds-checkbox">
+                                <label class="slds-checkbox">
+                                    <ui:inputCheckbox value="{!v.apexCtrl.opp.IsEnergyTariffClassified__c}" disabled="{!v.apexCtrl.contractCreated}"/>
+                                    <span class="slds-checkbox_faux"></span>
+                                    <span class="slds-form-element__label">{!v.apexCtrl.isEnergyTariffClassifiedLabel}</span>
+                                </label>
+                            </span>
+                            <span class="slds-checkbox">
+                                <label class="slds-checkbox">
+                                    <ui:inputCheckbox value="{!v.apexCtrl.opp.IsInstallerSpezified__c}" disabled="{!v.apexCtrl.contractCreated}"/>
+                                    <span class="slds-checkbox_faux"></span>
+                                    <span class="slds-form-element__label">{!v.apexCtrl.isInstallerSpezifiedLabel}</span>
+                                </label>
+                            </span>
+                            <span class="slds-checkbox">
+                                <label class="slds-checkbox">
+                                    <ui:inputCheckbox value="{!v.apexCtrl.opp.IsPVSizeSpezified__c}" disabled="{!v.apexCtrl.contractCreated}"/>
+                                    <span class="slds-checkbox_faux"></span>
+                                    <span class="slds-form-element__label">{!v.apexCtrl.isPVSizeSpezifiedLabel}</span>
+                                </label>
+                            </span>
+                            <span class="slds-checkbox">
+                                <label class="slds-checkbox">
+                                    <ui:inputCheckbox value="{!v.apexCtrl.opp.IsInstallationDocumented__c}" disabled="{!v.apexCtrl.contractCreated}"/>
+                                    <span class="slds-checkbox_faux"></span>
+                                    <span class="slds-form-element__label">{!v.apexCtrl.isInstallationDocumentedLabel}</span>
+                                </label>
+                            </span>
+                        </div>
+                    </fieldset>
+
+                    <div class="clear"></div>
+                    <br/>
+
+                    <div class="slds-text-heading_small slds-p-bottom_x-small">
+                        {!$Label.c.ContractCreatorFromOpp_RelatedOrderInputDefVal}
+                    </div>
+
+                    <div class="clear"></div>
+
+                    <div class="slds-scrollable_y" style="height: 18rem">
+                        <table class="slds-table slds-table_fixed-layout slds-table_bordered">
+                            <thead>
+                                <th class="slds-size_4-of-12" scope="col">
+                                    <div class="slds-truncate slds-text-heading_small" title="{!$Label.c.ContractCreatorFromOpp_RelatedOrderInputDefVal_Name}">
+                                        {!$Label.c.ContractCreatorFromOpp_RelatedOrderInputDefVal_Name}
+                                    </div>
+                                </th>
+                                <th class="slds-size_7-of-12" scope="col">
+                                    <div class="slds-truncate slds-text-heading_small" title="{!$Label.c.ContractCreatorFromOpp_RelatedOrderInputDefVal_Value}">
+                                        {!$Label.c.ContractCreatorFromOpp_RelatedOrderInputDefVal_Value}
+                                    </div>
+                                </th>
+                                <th class="slds-size_1-of-12" scope="col"/>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.apexCtrl.orderInpDefVal}" var="oidv">
+                                    <tr>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate" title="{!oidv.item.OrderInputDefinitionLabel__c}">
+                                                {!oidv.item.OrderInputDefinitionLabel__c}
+                                            </div>
+                                        </td>
+                                        <td data-label="Value">
+                                             <div class="slds-truncate" title="{!oidv.objValue.value}">
+                                                 <aura:if isTrue="{!oidv.type == 'BOOLEAN'}">
+                                                     <ui:inputCheckbox value="{!oidv.objValue.value}"
+                                                                       class="disabledBoolean"
+                                                                       disabled="{!or(v.apexCtrl.contractCreated, oidv.item.OrderInputDefinition__r.Visibility__c != v.apexCtrl.EDITABLE)}"/>
+                                                 </aura:if>
+                                                 <aura:if isTrue="{!oidv.type == 'STRING'}">
+                                                     <ui:inputText value="{!oidv.objValue.value}" class="inline-input"
+                                                                   disabled="{!or(v.apexCtrl.contractCreated, oidv.item.OrderInputDefinition__r.Visibility__c != v.apexCtrl.EDITABLE)}"/>
+                                                 </aura:if>
+                                                 <aura:if isTrue="{!oidv.type == 'PICKLIST'}">
+                                                     <ui:inputSelect value="{!oidv.objValue.value}"
+                                                                     disabled="{!or(v.apexCtrl.contractCreated, oidv.item.OrderInputDefinition__r.Visibility__c != v.apexCtrl.EDITABLE)}"
+                                                                     options="{!oidv.options}"/>
+                                                 </aura:if>
+                                                 <aura:if isTrue="{!oidv.type == 'MULTIPICKLIST'}">
+                                                     <ui:inputSelect value="{!oidv.objValue.value}"
+                                                                     disabled="{!or(v.apexCtrl.contractCreated, oidv.item.OrderInputDefinition__r.Visibility__c != v.apexCtrl.EDITABLE)}"
+                                                                     options="{!oidv.options}"
+                                                                     multiple="true"/>
+                                                 </aura:if>
+                                                 <aura:if isTrue="{!oidv.type == 'DATE'}">
+                                                     <ui:inputDate class="slds-input"
+                                                                   value="{!oidv.objValue.value}"
+                                                                   displayDatePicker="true"
+                                                                   disabled="{!or(v.apexCtrl.contractCreated, oidv.item.OrderInputDefinition__r.Visibility__c != v.apexCtrl.EDITABLE)}"/>
+                                                 </aura:if>
+                                                 <aura:if isTrue="{!oidv.type == 'DATETIME'}">
+                                                     <ui:inputDateTime class="slds-input"
+                                                                       value="{!oidv.objValue.value}"
+                                                                       displayDatePicker="true"
+                                                                       disabled="{!or(v.apexCtrl.contractCreated, oidv.item.OrderInputDefinition__r.Visibility__c != v.apexCtrl.EDITABLE)}"/>
+                                                 </aura:if>
+                                                 <aura:if isTrue="{!oidv.type == 'DOUBLE'}">
+                                                     <lightning:input type="number"
+                                                                      value="{!oidv.objValue.value}"
+                                                                      variant="label-hidden" step="0.1"
+                                                                      disabled="{!or(v.apexCtrl.contractCreated, oidv.item.OrderInputDefinition__r.Visibility__c != v.apexCtrl.EDITABLE)}"/>
+                                                 </aura:if>
+                                                 <aura:if isTrue="{!oidv.type == 'PERCENT'}">
+                                                     <lightning:input type="number"
+                                                                      value="{!oidv.objValue.value}"
+                                                                      formatter="percent-fixed"
+                                                                      step="0.1"
+                                                                      variant="label-hidden"
+                                                                      disabled="{!or(v.apexCtrl.contractCreated, oidv.item.OrderInputDefinition__r.Visibility__c != v.apexCtrl.EDITABLE)}"/>
+                                                 </aura:if>
+                                                 <aura:if isTrue="{!oidv.type == 'CURRENCY'}">
+                                                     <lightning:input type="number"
+                                                                      value="{!oidv.objValue.value}"
+                                                                      formatter="currency"
+                                                                      step="0.1"
+                                                                      variant="label-hidden"
+                                                                      disabled="{!or(v.apexCtrl.contractCreated, oidv.item.OrderInputDefinition__r.Visibility__c != v.apexCtrl.EDITABLE)}"/>
+                                                 </aura:if>
+                                            </div>
+                                        </td>
+                                        <td >
+                                            <aura:if isTrue="{!oidv.item.OriginalValue__c != oidv.item.Value__c}">
+                                                <lightning:helptext iconName="utility:anchor" content="This value differs from the original one" />
+                                            </aura:if>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="clear"></div>
+                    <br/>
+
+                    <fieldset class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <span class="slds-checkbox">
+                                <label class="slds-checkbox">
+                                    <ui:inputCheckbox value="{!v.apexCtrl.opp.ContractDataApproved__c}" disabled="{!v.apexCtrl.contractCreated}"/>
+                                    <span class="slds-checkbox_faux"></span>
+                                    <span class="slds-form-element__label">{!v.apexCtrl.contractDataApprovedLabel}</span>
+                                </label>
+                            </span>
+                        </div>
+                    </fieldset>
+
+                    <div class="clear"></div>
+
+                    <lightning:button label="{!$Label.c.ContractCreatorFromOpp_Button}"
+                        class="slds-button_brand send-button"
+                        onclick="{!c.saveData}"
+                        disabled="{! or(!v.apexCtrl.opp.ContractDataApproved__c, v.apexCtrl.contractCreated)}"/>
+
+                    <div class="clear"></div>
+
+                </aura:set>
+            </aura:if>
+        </div>
+
+        <div class="slds-spinner_container slds-hide" aura:id="spinner">
+            <div class="slds-spinner slds-spinner--medium" aria-hidden="false" role="alert">
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+
+
+</aura:component>
